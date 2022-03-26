@@ -1,0 +1,12 @@
+node_modules/
+/cache
+
+*.conf
+
+.DS_Store
+.env
+.env_prod
+.env_dev
+
+package-lock.json
+test.js
