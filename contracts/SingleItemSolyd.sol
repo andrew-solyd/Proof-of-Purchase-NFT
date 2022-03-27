@@ -23,6 +23,7 @@ contract SingleItemSolyd {
 		uint id;
 		uint timeStamp;
 		uint orderNumber;
+		uint shopOrderId;
 		uint itemCount;
 		uint pricePaid;
 	}
@@ -69,7 +70,7 @@ contract SingleItemSolyd {
 	}
 	// ➡️ Purchase Ledger Functions ➡️
 	// new purchase write to PurchaseLedger returns purchase id 
-	function writePurchase(uint _timeStamp, uint _orderNumber, uint _itemCount, uint _pricePaid) public returns (uint) {
+	function writePurchase(uint _timeStamp, uint _orderNumber, uint _shopOrderId, uint _itemCount, uint _pricePaid) public returns (uint) {
 
 		// Check if order already is in ledger
 		if ( orderNumber[_orderNumber].orderNumber != 0 ){
@@ -77,18 +78,19 @@ contract SingleItemSolyd {
 			if ( itemsSold <= maxItems ) {
 				uint id = purchases++;
 				itemsSold = itemsSold + _itemCount;
-				purchaseId[id] = PurchaseLedger(id, _timeStamp, _orderNumber, _itemCount, _pricePaid);
-				orderNumber[_orderNumber] = PurchaseLedger(id, _timeStamp, _orderNumber, _itemCount, _pricePaid);
+				purchaseId[id] = PurchaseLedger(id, _timeStamp, _orderNumber, _shopOrderId, _itemCount, _pricePaid);
+				orderNumber[_orderNumber] = PurchaseLedger(id, _timeStamp, _orderNumber, _shopOrderId, _itemCount, _pricePaid);
 
 				return id;
 			} else { return 0;}
 		} else { return 0;}
 	}
 	// get full purchase ledger 
-	function purchaseLedger() public view returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory) {
+	function purchaseLedger() public view returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory, uint[] memory) {
 		
 		uint[] memory timeStamp_;
 		uint[] memory orderNumber_;
+		uint[] memory shopOrderId_;
 		uint[] memory itemCount_;
 		uint[] memory pricePaid_;
 
@@ -96,11 +98,12 @@ contract SingleItemSolyd {
 			PurchaseLedger memory entry = purchaseId[i];
 			timeStamp_[i] = entry.timeStamp;
 			orderNumber_[i] = entry.orderNumber;
+			shopOrderId_[i] = entru.shopOrderId;
 			itemCount_[i] = entry.itemCount;
 			pricePaid_[i] = entry.pricePaid;
 		}
 
-		return(timeStamp_, orderNumber_, itemCount_, pricePaid_);
+		return(timeStamp_, orderNumber_, shopOrderId_ itemCount_, pricePaid_);
 	}
 	// ➡️ Player Ledger Functions ➡️
 	//link wallet to player ledger return player id, new player for every new nft minted
@@ -193,7 +196,3 @@ contract SingleItemSolyd {
 	}
 
 }
-
-
-
-
