@@ -40,13 +40,16 @@ contract SingleItemSolyd {
 	// set up payout ledger
 	uint payments = 0;
 	struct PayoutLedger {
+		uint timeStamp;
 		uint purchaseLedgerId;
+		string payoutMethod;
+		string	payoutConfirmation;
 		uint amount;
 	}
 	mapping (uint => PayoutLedger) payoutId;
 	// ➡️ Contract Functions ➡️
 	// write terms and lock contract
-	function writeContracTerms (uint _launchTimestamp, uint _itemPrice, uint _maxItems, uint _maxCashbackPercent, uint _promoCashbackPercent, uint _gameLevels, uint _gameExpires) public {
+	function writeContractTerms (uint _launchTimestamp, uint _itemPrice, uint _maxItems, uint _maxCashbackPercent, uint _promoCashbackPercent, uint _gameLevels, uint _gameExpires) public {
 
 		if (locked == false) {
 			launchTimestamp = _launchTimestamp;
@@ -57,6 +60,7 @@ contract SingleItemSolyd {
 			gameLevels = _gameLevels;
 			gameExpires = _gameExpires;
 			locked = true;
+			live = true;
 		}
 	}
 	// stop contract
@@ -98,12 +102,12 @@ contract SingleItemSolyd {
 			PurchaseLedger memory entry = purchaseId[i];
 			timeStamp_[i] = entry.timeStamp;
 			orderNumber_[i] = entry.orderNumber;
-			shopOrderId_[i] = entru.shopOrderId;
+			shopOrderId_[i] = entry.shopOrderId;
 			itemCount_[i] = entry.itemCount;
 			pricePaid_[i] = entry.pricePaid;
 		}
 
-		return(timeStamp_, orderNumber_, shopOrderId_ itemCount_, pricePaid_);
+		return(timeStamp_, orderNumber_, shopOrderId_, itemCount_, pricePaid_);
 	}
 	// ➡️ Player Ledger Functions ➡️
 	//link wallet to player ledger return player id, new player for every new nft minted
@@ -123,24 +127,24 @@ contract SingleItemSolyd {
 	function playerLedger() public view returns (address[] memory, uint[] memory) {
 
 		address[] memory wallet0x_ = new address[](players);
-		uint[] memory nftTokenIds_ = new uint[](players);
+		uint[] memory nftTokenId_ = new uint[](players);
 
 		for (uint i = 0; i < players; i++) {
 			PlayerLedger memory entry = playerId[i];
 			wallet0x_[i] = entry.walletOx;
-			nftTokenIds_[i] = entry.nftTokenId;
+			nftTokenId_[i] = entry.nftTokenId;
 		}
 
-		return(wallet0x_, nftTokenIds_);
+		return(wallet0x_, nftTokenId_);
 	}
 	// ➡️ Payout Functions ➡️
 	//write payout return payout id
-	function writePayout(uint _orderNumber, uint _amount ) public returns (uint) {
+	function writePayout(uint _timeStamp, uint _orderNumber, string memory _payoutMethod, string memory _payoutConfirmation, uint _amount ) public returns (uint) {
 
 		uint purchaseId_ = orderNumber[_orderNumber].id;
 		if ( purchaseId_ != 0) {
 			uint id = payments++;
-			payoutId[id] = PayoutLedger(purchaseId_, _amount);
+			payoutId[id] = PayoutLedger(_timeStamp, purchaseId_, _payoutMethod, _payoutConfirmation, _amount);
 			return id; 
 		} else {
 			return 0;
@@ -182,17 +186,23 @@ contract SingleItemSolyd {
 		return (wallets_, pricePaid_);
 	}
 	// get full payout ledger
-	function payoutLedger() public view returns (uint[] memory, uint[] memory) {
+	function payoutLedger() public view returns (uint[] memory, uint[] memory, string[] memory, string[] memory, uint[] memory) {
 
+		uint[] memory timeStamp_ = new uint[](payments);
 		uint[] memory orderNumber_ = new uint[](payments);
+		string[] memory payoutMedthod_ = new string[](payments);
+		string[] memory payoutConfirmation_ = new string[](payments);
 		uint[] memory amount_ = new uint[](payments);
 
 		for (uint i = 0; i < payments; i++) {
+			timeStamp_[i]=payoutId[i].timeStamp;
 			orderNumber_[i] = purchaseId[payoutId[i].purchaseLedgerId].orderNumber;
+			payoutMedthod_[i] = payoutId[i].payoutMethod;
+			payoutConfirmation_[i] = payoutId[i].payoutConfirmation;
 			amount_[i] = payoutId[i].amount;
 		}
 
-		return(orderNumber_, amount_);
+		return(timeStamp_, orderNumber_, payoutMedthod_, payoutConfirmation_, amount_);
 	}
 
 }
