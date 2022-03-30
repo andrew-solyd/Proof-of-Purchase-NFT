@@ -8,6 +8,7 @@ contract SingleItemSolyd {
 	// set up contract states
 	bool private locked = false;
 	bool private live = false;
+	bool private stopped = false;
 	uint private launchTimestamp; 
 	// set up contract terms
 	uint itemPrice;
@@ -44,7 +45,7 @@ contract SingleItemSolyd {
 		uint purchaseLedgerId;
 		string payoutMethod;
 		string	payoutConfirmation;
-		uint amount;
+		uint payoutAmount;
 	}
 	mapping (uint => PayoutLedger) payoutId;
 	// ➡️ Contract Functions ➡️
@@ -63,9 +64,16 @@ contract SingleItemSolyd {
 			live = true;
 		}
 	}
-	// stop contract
-	function stopContract () public {
-		if (live == true) { live = false; }
+	// start game
+	function startGame () public {
+		if (live == false && stoped == false) { live = true; }
+	}	
+	// stop game
+	function stopGame () public {
+		if (live == true) { 
+			live = false;
+			stopped = true;
+		}
 	}
 	// get game status
 	function gameStatus () public view returns (uint, bool, uint, uint, uint, uint, uint, uint, uint) {
@@ -79,7 +87,7 @@ contract SingleItemSolyd {
 		// Check if order already is in ledger
 		if ( orderNumber[_orderNumber].orderNumber != 0 ){
 		// Check for max items  
-			if ( itemsSold <= maxItems ) {
+			if ( itemsSold < maxItems ) {
 				uint id = purchases++;
 				itemsSold = itemsSold + _itemCount;
 				purchaseId[id] = PurchaseLedger(id, _timeStamp, _orderNumber, _shopOrderId, _itemCount, _pricePaid);
@@ -139,12 +147,12 @@ contract SingleItemSolyd {
 	}
 	// ➡️ Payout Functions ➡️
 	//write payout return payout id
-	function writePayout(uint _timeStamp, uint _orderNumber, string memory _payoutMethod, string memory _payoutConfirmation, uint _amount ) public returns (uint) {
+	function writePayout(uint _timeStamp, uint _orderNumber, string memory _payoutMethod, string memory _payoutConfirmation, uint _payoutAmount ) public returns (uint) {
 
 		uint purchaseId_ = orderNumber[_orderNumber].id;
 		if ( purchaseId_ != 0) {
 			uint id = payments++;
-			payoutId[id] = PayoutLedger(_timeStamp, purchaseId_, _payoutMethod, _payoutConfirmation, _amount);
+			payoutId[id] = PayoutLedger(_timeStamp, purchaseId_, _payoutMethod, _payoutConfirmation, _payoutAmount);
 			return id; 
 		} else {
 			return 0;
@@ -192,17 +200,17 @@ contract SingleItemSolyd {
 		uint[] memory orderNumber_ = new uint[](payments);
 		string[] memory payoutMedthod_ = new string[](payments);
 		string[] memory payoutConfirmation_ = new string[](payments);
-		uint[] memory amount_ = new uint[](payments);
+		uint[] memory payoutAmount_ = new uint[](payments);
 
 		for (uint i = 0; i < payments; i++) {
 			timeStamp_[i]=payoutId[i].timeStamp;
 			orderNumber_[i] = purchaseId[payoutId[i].purchaseLedgerId].orderNumber;
 			payoutMedthod_[i] = payoutId[i].payoutMethod;
 			payoutConfirmation_[i] = payoutId[i].payoutConfirmation;
-			amount_[i] = payoutId[i].amount;
+			payoutAmount_[i] = payoutId[i].payoutAmount;
 		}
 
-		return(timeStamp_, orderNumber_, payoutMedthod_, payoutConfirmation_, amount_);
+		return(timeStamp_, orderNumber_, payoutMedthod_, payoutConfirmation_, payoutAmount_);
 	}
 
 }

@@ -8,6 +8,7 @@ contract IdToken {
 	// set up token
 	uint tokens = 0;
 	struct Token {
+		address holderWallet;
 		string holderWalletKey;
 		uint holderPhone;
 		string holderBtcWallet;
@@ -22,7 +23,7 @@ contract IdToken {
 		// check phone not already mapped
 		if (holderPhone[_holderPhone] == 0) {
 			uint id = tokens++;
-			tokenId[id] = Token(_holderWalletKey, _holderPhone, _holderBtcWallet, _payoutMethod);
+			tokenId[id] = Token(_holderWallet, _holderWalletKey, _holderPhone, _holderBtcWallet, _payoutMethod);
 			holderWallet[_holderWallet] = id;
 			holderPhone[_holderPhone] = id;
 		}
@@ -47,7 +48,7 @@ contract IdToken {
 	// get token by phone number
 	function getTokenFromPhone(uint _phone) public view returns (uint, string memory, string memory) {
 		uint id = holderPhone[_phone];
-		return (tokenId[id].holderPhone, tokenId[id].holderBtcWallet, tokenId[id].payoutMethod);
+		return (tokenId[id].holderWallet, tokenId[id].holderBtcWallet, tokenId[id].payoutMethod);
 	}
 	// get wallet key
 	function getWalletKey(address _wallet) public view returns (string memory) {
