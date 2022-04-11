@@ -66,7 +66,7 @@ contract SingleItemSolyd {
 	}
 	// start game
 	function startGame () public {
-		if (live == false && stoped == false) { live = true; }
+		if (live == false && stopped == false) { live = true; }
 	}	
 	// stop game
 	function stopGame () public {

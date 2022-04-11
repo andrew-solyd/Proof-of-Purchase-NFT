@@ -46,7 +46,7 @@ contract IdToken {
 		return (tokenId[id].holderPhone, tokenId[id].holderBtcWallet, tokenId[id].payoutMethod);
 	}
 	// get token by phone number
-	function getTokenFromPhone(uint _phone) public view returns (uint, string memory, string memory) {
+	function getTokenFromPhone(uint _phone) public view returns (address, string memory, string memory) {
 		uint id = holderPhone[_phone];
 		return (tokenId[id].holderWallet, tokenId[id].holderBtcWallet, tokenId[id].payoutMethod);
 	}

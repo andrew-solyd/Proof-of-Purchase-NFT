@@ -9,11 +9,17 @@ async function main() {
   await hello.deployed();
   console.log("Hello Contract deployed to:", hello.address);
 
+  /*
   const SingleItemSolyd = await hre.ethers.getContractFactory("SingleItemSolyd");
   const singleitemsolyd = await SingleItemSolyd.deploy();
   await singleitemsolyd.deployed();
   console.log("SingleItemSolyd Contract deployed to:", singleitemsolyd.address);
+  */
 
+  const Shops = await hre.ethers.getContractFactory("Shops");
+  const shops = await Shops.deploy();
+  await shops.deployed();
+  console.log("Shops Contract deployed to:", shops.address);
 }
 
 main()

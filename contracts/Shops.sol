@@ -13,11 +13,13 @@ contract Shops {
 	}
 	mapping(uint => ShopLedger) shopId;
 	// Map credits integer to the shopOrigin 
-	mapping(string => uint) balances;
+	mapping(string => uint) balance;
 	// Map array of addresses of contracts deployed to the shopOrigin
 	mapping(string => address[]) contracts;
 	// Map contracts to product item ids 
-	mapping(uint => address) items;
+	mapping(uint => address) item;
+	// 💳 map paypal order ids to game contract addresses
+	mapping(address => string) paypalOrderId;
 	// ➡️ Contract Functions ➡️
 	// Add shop
 	function addShop(string memory _shopOrigin, uint _createdTimeStamp) public {
@@ -25,7 +27,7 @@ contract Shops {
 		shopId[id] = ShopLedger(_shopOrigin, _createdTimeStamp);
 	}
 	// Get ledger of all shops
-	function getShops() public view returns (string[] memory, uint[] memory) {
+	function getShops() public view returns (uint[] memory, string[] memory) {
 		string[] memory shopOrigin_ = new string[](shops);
 		uint[] memory createdTimeStamp_ = new uint[](shops);
 		for (uint i = 0; i < shops; i++) {
@@ -37,11 +39,11 @@ contract Shops {
 	}
 	// Add credits to shop
 	function updateBalance(string memory _shopOrigin, uint256 _newBalance) public {
-		balances[_shopOrigin] = _newBalance;
+		balance[_shopOrigin] = _newBalance;
 	}
 	// Read shop's credit balance
 	function getBalance(string memory _shopOrigin) public view returns (uint256) {
-		return balances[_shopOrigin];
+		return balance[_shopOrigin];
 	}
 	// Bind contract to shop
 	function bindContract(string memory _shopOrigin, address _contractAddress) public {
@@ -54,11 +56,18 @@ contract Shops {
 	}
 	// Bind product item id to contract
 	function bindItem(address _contractAddress, uint _itemId) public {
-		items[_itemId] = _contractAddress;
+		item[_itemId] = _contractAddress;
 	}
 	// Check if product item is bound to contract address which it returns
 	function checkItem(uint _itemId) public view returns (address) {
-		return items[_itemId];
+		return item[_itemId];
 	}
+
+
+	// TODO: 🚧 Payment Functions 🚧
+
+	// Set up new order and authorization
+
+
 	
 }
