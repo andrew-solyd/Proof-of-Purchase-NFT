@@ -18,3 +18,4 @@ npx hardhat test
 npx hardhat node
 
 npx hardhat --network localhost run scripts/deploy.js
+npx hardhat --network SKALE run scripts/deploy.js
