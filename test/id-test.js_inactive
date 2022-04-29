@@ -1,0 +1,50 @@
+const chai = require("chai");
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
+
+chai.use(require('chai-bignumber')());
+
+describe("IdToken", function() {
+
+	let Solyd;
+	let hardhatSolyd;
+
+	beforeEach(async function () {
+
+		IdToken = await hre.ethers.getContractFactory("IdToken");
+		hardhatId = await IdToken.deploy();
+
+	});	
+
+	describe("Create player and check", function () {
+
+		it("Shoulda coulda", async function () {
+			
+			const mint1 = await hardhatId.mint('0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc', '0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba', 6464152245, '', 'VENMO');
+	    	if (mint1.confirmations = 1) {
+	    		const id = await hardhatId.testTwo(6464152245);
+	    		console.log('!!!! Should be 1 1 >>>', id[0]*1, id[1]*1)
+	    	}	
+	    	const token1 = await hardhatId.getTokenFromPhone(6464152245);
+	    	expect(ethers.utils.getAddress(token1[0])).to.equal(ethers.utils.getAddress('0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc'));
+
+	    	const mint2 = await hardhatId.mint('0x14dc79964da2c08b23698b3d3cc7ca32193d9955', '0x4bbbf85ce3377467afe5d46f804f221813b2bb87f24d81f60f1fcdbf7cbf4356', 6464152240, '', 'VENMO');
+	    	if (mint2.confirmations = 1) {
+	    		const id = await hardhatId.testTwo(6464152240);
+	    		console.log('!!!! Should be 2 2 >>>', id[0]*1, id[1]*1)
+	    	}	
+	    	const token2 = await hardhatId.getTokenFromPhone(6464152240);
+	    	expect(ethers.utils.getAddress(token2[0])).to.equal(ethers.utils.getAddress('0x14dc79964da2c08b23698b3d3cc7ca32193d9955'));
+
+	    	const mint3 = await hardhatId.mint('0x14dc79964da2c08b23698b3d3cc7ca32193d9955', '0x4bbbf85ce3377467afe5d46f804f221813b2bb87f24d81f60f1fcdbf7cbf4356', 6464152245, '', 'VENMO');
+	    	if (mint3.confirmations = 1) {
+	    		const id = await hardhatId.testTwo(6464152245);
+	    		console.log('!!!! Should be 1 2 >>>', id[0]*1, id[1]*1)
+	    	}	
+	    	const token3 = await hardhatId.getTokenFromPhone(6464152245);
+	    	expect(ethers.utils.getAddress(token3[0])).to.equal(ethers.utils.getAddress('0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc'));
+			
+		});
+
+	});
+});

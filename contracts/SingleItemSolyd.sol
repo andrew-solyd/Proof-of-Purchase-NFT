@@ -129,14 +129,13 @@ contract SingleItemSolyd {
 	function newPlayer(uint _orderNumber, address _wallet0x, uint _nft) public returns (uint) {
 
 		uint purchaseId_ = orderNumber[_orderNumber];
+
+		// 🚧 Check for dupes
 		
 		if ( purchaseId_ != 0) {
 			uint id = players++;
 			playerId[id] = PlayerLedger(purchaseId_, _wallet0x, _nft);
-			return id; 
-		} else {
-			return 0;
-		}
+		} 
 	}
 	// get full player ledger
 	function playerLedger() public view returns (address[] memory, uint[] memory) {

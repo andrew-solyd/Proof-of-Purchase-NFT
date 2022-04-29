@@ -20,6 +20,16 @@ async function main() {
   const shops = await Shops.deploy();
   await shops.deployed();
   console.log("Shops Contract deployed to:", shops.address);
+
+  const Claims = await hre.ethers.getContractFactory("Claims");
+  const claims = await Claims.deploy();
+  await claims.deployed();
+  console.log("Claims Contract deployed to:", claims.address);
+
+  const IdToken = await hre.ethers.getContractFactory("IdToken");
+  const idToken = await IdToken.deploy();
+  await idToken.deployed();
+  console.log("IdToken Contract deployed to:", idToken.address);
 }
 
 main()

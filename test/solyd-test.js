@@ -48,4 +48,20 @@ describe("SingleItemSolyd", function() {
 			
 		});
 	});
+
+	describe("Player Ledger", function () {
+
+		it("Should return 1 order in purchase ledger", async function () {
+			
+			const writePurchaseResult = await hardhatSolyd.writePurchase(1648086691106, 1001, 231244, 1, 1500);
+	    	if (writePurchaseResult.confirmations == 1) {
+	    		const newPlayerResult = await newPlayer(1001, '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', 0)
+	    	}
+
+	    	const purchaseLedger = await hardhatSolyd.purchaseLedger();
+	    	expect(purchaseLedger[1].length).to.equal(1);
+			
+		});
+
+	});
 });
