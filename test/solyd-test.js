@@ -18,12 +18,13 @@ describe("SingleItemSolyd", function() {
 
 	describe("Purchase Ledger", function () {
 
-		it("Should return 1 order in purchase ledger", async function () {
+		it("Should return 2 orders in purchase ledger", async function () {
 			
 			await hardhatSolyd.writePurchase(1648086691106, 1001, 231244, 1, 1500);
+			await hardhatSolyd.writePurchase(1648086691106, 1002, 231244, 1, 1500);
 	    	
 	    	const purchaseLedger = await hardhatSolyd.purchaseLedger();
-	    	expect(purchaseLedger[1].length).to.equal(1);
+	    	expect(purchaseLedger[1].length).to.equal(2);
 			
 		});
 
@@ -51,15 +52,21 @@ describe("SingleItemSolyd", function() {
 
 	describe("Player Ledger", function () {
 
-		it("Should return 1 order in purchase ledger", async function () {
+		it("Should return 2 players in player ledger", async function () {
 			
-			const writePurchaseResult = await hardhatSolyd.writePurchase(1648086691106, 1001, 231244, 1, 1500);
-	    	if (writePurchaseResult.confirmations == 1) {
-	    		const newPlayerResult = await newPlayer(1001, '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', 0)
+			const writePurchaseResult1 = await hardhatSolyd.writePurchase(1648086691106, 1001, 231244, 1, 1500);
+	    	if (writePurchaseResult1.confirmations = 1) {
+	    		const newPlayerResult = await hardhatSolyd.newPlayer(1001, '0x70997970c51812dc3a010c7d01b50e0d17dc79c8', 0);
 	    	}
-
+	    	const writePurchaseResult2 = await hardhatSolyd.writePurchase(1648086691106, 1002, 231245, 1, 1500);
+	    	if (writePurchaseResult2.confirmations = 1) {
+	    		const newPlayerResult = await hardhatSolyd.newPlayer(1002, '0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc', 0);
+	    	}
 	    	const purchaseLedger = await hardhatSolyd.purchaseLedger();
-	    	expect(purchaseLedger[1].length).to.equal(1);
+	    	console.log(purchaseLedger)
+	    	const playerLedger = await hardhatSolyd.playerLedger();
+	    	console.log(playerLedger)
+	    	expect(playerLedger[1].length).to.equal(2);
 			
 		});
 

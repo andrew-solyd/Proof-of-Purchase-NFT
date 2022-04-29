@@ -126,30 +126,33 @@ contract SingleItemSolyd {
 	}
 	// ➡️ Player Ledger Functions ➡️
 	//link wallet to player ledger return player id, new player for every new nft minted
-	function newPlayer(uint _orderNumber, address _wallet0x, uint _nft) public returns (uint) {
+	function newPlayer(uint _orderNumber, address _wallet0x, uint _nft) public {
 
-		uint purchaseId_ = orderNumber[_orderNumber];
+		uint purchaseLedgerId_ = orderNumber[_orderNumber];
 
 		// 🚧 Check for dupes
 		
-		if ( purchaseId_ != 0) {
+		if ( purchaseId[purchaseLedgerId_].orderNumber != 0) {
 			uint id = players++;
-			playerId[id] = PlayerLedger(purchaseId_, _wallet0x, _nft);
+			playerId[id] = PlayerLedger(purchaseLedgerId_, _wallet0x, _nft);
 		} 
+
 	}
 	// get full player ledger
-	function playerLedger() public view returns (address[] memory, uint[] memory) {
+	function playerLedger() public view returns (uint[] memory, address[] memory, uint[] memory) {
 
+		uint[] memory orderNumber_ = new uint[](players);
 		address[] memory wallet0x_ = new address[](players);
 		uint[] memory nftTokenId_ = new uint[](players);
-
+		
 		for (uint i = 0; i < players; i++) {
 			PlayerLedger memory entry = playerId[i];
+			orderNumber_[i] = purchaseId[entry.purchaseLedgerId].orderNumber;
 			wallet0x_[i] = entry.walletOx;
 			nftTokenId_[i] = entry.nftTokenId;
 		}
 
-		return(wallet0x_, nftTokenId_);
+		return(orderNumber_, wallet0x_, nftTokenId_);
 	}
 	// ➡️ Payout Functions ➡️
 	//write payout return payout id
