@@ -13,21 +13,29 @@ contract IdToken {
 		uint holderPhone;
 		string holderBtcWallet;
 		string payoutMethod;
+		bool mute;
 	}
 	mapping (uint => Token) tokenId;
 	mapping (address => uint) holderWallet;
 	mapping (uint => uint) holderPhone;
+	
+	// 🚧 for future Status check functionality add gameContractAddress array mapped to holderWallet + functions
+
 	// ➡️ Contract Functions ➡️
 	// mint new token
 	function mint(address _holderWallet, string memory _holderWalletKey, uint _holderPhone, string memory _holderBtcWallet, string memory _payoutMethod) public {
 		// check phone not already mapped
 		if (holderPhone[_holderPhone] == 0) {
 			uint id = tokens++;
-			tokenId[id] = Token(_holderWallet, _holderWalletKey, _holderPhone, _holderBtcWallet, _payoutMethod);
+			// 🤡 I have no idea why need to do id++ 
+			id++;
+			// 🤡
+			tokenId[id] = Token(_holderWallet, _holderWalletKey, _holderPhone, _holderBtcWallet, _payoutMethod, false);
 			holderWallet[_holderWallet] = id;
 			holderPhone[_holderPhone] = id;
 		}
 	}
+
 	// setup btc wallet 
 	function setBtcWallet(address _wallet, string memory _holderBtcWallet) public {
 		uint id = holderWallet[_wallet];
@@ -40,15 +48,21 @@ contract IdToken {
 		Token storage token = tokenId[id];
 		token.payoutMethod = _payoutMethod;
 	}
-	// get token by holder wallet
-	function getTokenFromWallet(address _wallet) public view returns (uint, string memory, string memory) {
+	// setup mute/umute
+	function setMute(address _wallet, bool _mute) public {
 		uint id = holderWallet[_wallet];
-		return (tokenId[id].holderPhone, tokenId[id].holderBtcWallet, tokenId[id].payoutMethod);
+		Token storage token = tokenId[id];
+		token.mute = _mute;
+	}
+	// get token by holder wallet
+	function getTokenFromWallet(address _wallet) public view returns (uint, string memory, string memory, bool) {
+		uint id = holderWallet[_wallet];
+		return (tokenId[id].holderPhone, tokenId[id].holderBtcWallet, tokenId[id].payoutMethod, tokenId[id].mute);
 	}
 	// get token by phone number
-	function getTokenFromPhone(uint _phone) public view returns (address, string memory, string memory) {
+	function getTokenFromPhone(uint _phone) public view returns (address, string memory, string memory, bool) {
 		uint id = holderPhone[_phone];
-		return (tokenId[id].holderWallet, tokenId[id].holderBtcWallet, tokenId[id].payoutMethod);
+		return (tokenId[id].holderWallet, tokenId[id].holderBtcWallet, tokenId[id].payoutMethod, tokenId[id].mute);
 	}
 	// get wallet key
 	function getWalletKey(address _wallet) public view returns (string memory) {

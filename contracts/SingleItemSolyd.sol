@@ -11,6 +11,7 @@ contract SingleItemSolyd {
 	bool private stopped = false;
 	uint private launchTimestamp; 
 	// set up contract terms
+	string itemURL;
 	uint itemPrice;
 	uint maxItems;
 	uint maxCashbackPercent;
@@ -28,6 +29,7 @@ contract SingleItemSolyd {
 		uint pricePaid;
 	}
 	mapping (uint => PurchaseLedger) purchaseId;
+		// maps orderNumbers to purchaseledger ids for lookup
 	mapping (uint => uint) orderNumber;
 	// set up player ledger 
 	uint players = 0;
@@ -49,10 +51,11 @@ contract SingleItemSolyd {
 	mapping (uint => PayoutLedger) payoutId;
 	// ➡️ Contract Functions ➡️
 	// write terms and lock contract
-	function writeContractTerms (uint _launchTimestamp, uint _itemPrice, uint _maxItems, uint _maxCashbackPercent, uint _promoCashbackPercent, uint _gameLevels, uint _gameExpires) public {
+	function writeContractTerms (uint _launchTimestamp, string memory _itemURL, uint _itemPrice, uint _maxItems, uint _maxCashbackPercent, uint _promoCashbackPercent, uint _gameLevels, uint _gameExpires) public {
 
 		if (locked == false) {
 			launchTimestamp = _launchTimestamp;
+			itemURL = _itemURL;
 			itemPrice = _itemPrice;
 			maxItems = _maxItems;
 			maxCashbackPercent = _maxCashbackPercent;
@@ -75,15 +78,16 @@ contract SingleItemSolyd {
 		}
 	}
 	// get game status
-	function gameStatus () public view returns (uint, bool, uint, uint, uint, uint, uint, uint, uint) {
+	function gameStatus () public view returns (uint, bool, uint, uint, uint, uint, uint, uint, uint, string memory) {
 
-		return (launchTimestamp, live, itemsSold, itemPrice, maxItems, maxCashbackPercent, promoCashbackPercent, gameLevels, gameExpires);
+		return (launchTimestamp, live, itemsSold, itemPrice, maxItems, maxCashbackPercent, promoCashbackPercent, gameLevels, gameExpires, itemURL);
 	}
 	// ➡️ Purchase Ledger Functions ➡️
 	// new purchase write to PurchaseLedger returns purchase id 
 	function writePurchase(uint _timeStamp, uint _orderNumber, uint _shopOrderId, uint _itemCount, uint _pricePaid) public {
 
-		/*
+		/* 🚧 Need to make this check work!! 
+
 		// Check if order already is in ledger
 		if ( orderNumber[_orderNumber] == 0 ){
 		// Check for max items  
