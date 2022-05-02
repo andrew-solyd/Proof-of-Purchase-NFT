@@ -37,16 +37,17 @@ contract IdToken {
 	}
 
 	// setup btc wallet 
-	function setBtcWallet(address _wallet, string memory _holderBtcWallet) public {
+	function setPayoutMethodBTC(address _wallet, string memory _holderBtcWallet) public {
 		uint id = holderWallet[_wallet];
 		Token storage token = tokenId[id];
+		token.payoutMethod = "BTC";
 		token.holderBtcWallet = _holderBtcWallet;
 	}
 	// setup payout method (VENMO / BTC)
-	function setPayoutMethod(address _wallet, string memory _payoutMethod) public {
+	function setPayoutMethodVenmo(address _wallet) public {
 		uint id = holderWallet[_wallet];
 		Token storage token = tokenId[id];
-		token.payoutMethod = _payoutMethod;
+		token.payoutMethod = "VENMO";
 	}
 	// setup mute/umute
 	function setMute(address _wallet, bool _mute) public {
