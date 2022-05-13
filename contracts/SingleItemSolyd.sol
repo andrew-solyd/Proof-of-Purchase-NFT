@@ -9,9 +9,14 @@ contract SingleItemSolyd {
 	bool private locked = false;
 	bool private live = false;
 	string private stopGameReason = "NA";
-	uint private launchTimestamp; 
+	uint private launchTimestamp;
+	uint stopTimestamp;
 	// set up contract terms
+	string shopOrigin;
+	string shopName;
 	string itemURL;
+	string itemId;
+	string itemName;
 	string escrowPaymentOrderId;
 	uint itemPrice;
 	uint maxItems;
@@ -19,7 +24,6 @@ contract SingleItemSolyd {
 	uint promoCashbackPercent;
 	uint gameLevels;
 	uint gameExpires;
-	uint stopTimestamp;
 	// set up purchase ledger
 	uint purchases = 0;
 	uint itemsSold = 0;
@@ -52,12 +56,19 @@ contract SingleItemSolyd {
 	}
 	mapping (uint => PayoutLedger) payoutId;
 	// ➡️ Contract Functions ➡️
+	// write metadata
+	function writeMetaData(string memory _itemURL, string memory _shopOrigin, string memory _shopName, string memory _itemId, string memory _itemName) public {
+		shopOrigin = _shopOrigin;
+		shopName = _shopName;
+		itemId = _itemId;
+		itemName = _itemName;
+		itemURL = _itemURL;
+	}
 	// write terms and lock contract
-	function writeContractTerms (uint _launchTimestamp, string memory _itemURL, uint _itemPrice, uint _maxItems, uint _maxCashbackPercent, uint _promoCashbackPercent, uint _gameLevels, uint _gameExpires, string memory _escrowPaymentOrderId) public {
+	function writeContractTerms(uint _itemPrice, uint _maxItems, uint _maxCashbackPercent, uint _promoCashbackPercent, uint _gameLevels, uint _gameExpires, string memory _escrowPaymentOrderId) public {
 
 		if (locked == false) {
-			launchTimestamp = _launchTimestamp;
-			itemURL = _itemURL;
+			launchTimestamp = block.timestamp;
 			itemPrice = _itemPrice;
 			maxItems = _maxItems;
 			maxCashbackPercent = _maxCashbackPercent;
@@ -70,7 +81,7 @@ contract SingleItemSolyd {
 		}
 	}
 	// stop game
-	function stopGame (uint _stopTimestamp, string memory _stopGameReason) public {
+	function stopGame(uint _stopTimestamp, string memory _stopGameReason) public {
 		if (live == true) { 
 			live = false;
 			stopGameReason = _stopGameReason;
@@ -78,10 +89,14 @@ contract SingleItemSolyd {
 		}
 	}
 	// get game status
-	function gameStatus () public view returns (uint, bool, uint, uint, uint, uint, uint, uint, uint, string memory, uint, string memory) {
+	function gameStatus() public view returns (uint, bool, uint, uint, uint, uint, uint, uint, uint, uint, string memory) {
 
-		return (launchTimestamp, live, itemsSold, itemPrice, maxItems, maxCashbackPercent, promoCashbackPercent, gameLevels, gameExpires, itemURL, stopTimestamp, stopGameReason);
+		return (launchTimestamp, live, itemsSold, itemPrice, maxItems, maxCashbackPercent, promoCashbackPercent, gameLevels, gameExpires, stopTimestamp, stopGameReason);
 	}
+	function gameMetaData() public view returns (string memory, string memory, string memory, string memory, string memory) {
+		return (shopOrigin, shopName, itemId, itemName, itemURL);
+	}
+	// get paypal orderId
 	function getEscrowPaymentOrderId() public view returns (string memory) {
 		return escrowPaymentOrderId;
 	}
@@ -100,9 +115,10 @@ contract SingleItemSolyd {
 				uint id = purchases++;
 				orderNumber[_orderNumber] = id;
 				// check for max 
-				if ( itemsSold + _itemCount > maxItems) {				
+				if ( itemsSold + _itemCount >= maxItems) {				
 					live = false;
 					stopGameReason = 'MAXED';
+					stopTimestamp = block.timestamp;
 					itemsSold = maxItems;
 					uint itemCountAdjusted = maxItems - itemsSold;
 					uint pricePaidAdjusted = itemCountAdjusted * itemPrice;

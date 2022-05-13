@@ -6,6 +6,13 @@ require("dotenv").config({ path: "./.env" });
  */
 module.exports = {
   solidity: "0.8.9",
+  /*
+  settings: {
+    optimizer: {
+      runs: 200,
+      enabled: true
+    }
+  },*/
   networks: {
       SKALE: {
         url: process.env.ENDPOINT_HTTPS,
