@@ -12,10 +12,11 @@ contract SingleItemSolyd {
 	uint private launchTimestamp;
 	uint stopTimestamp;
 	// set up contract terms
+	string contractName;
 	string shopOrigin;
 	string shopName;
 	string itemURL;
-	string itemId;
+	uint itemId;
 	string itemName;
 	string escrowPaymentOrderId;
 	uint itemPrice;
@@ -42,9 +43,9 @@ contract SingleItemSolyd {
 	struct PlayerLedger {
 		uint purchaseLedgerId;
 		address walletOx;
-		uint nftTokenId;
 	}
 	mapping (uint => PlayerLedger) playerId;
+	mapping (uint => uint[]) playerNFTs;
 	// set up payout ledger
 	uint payments = 0;
 	struct PayoutLedger {
@@ -57,7 +58,8 @@ contract SingleItemSolyd {
 	mapping (uint => PayoutLedger) payoutId;
 	// ➡️ Contract Functions ➡️
 	// write metadata
-	function writeMetaData(string memory _itemURL, string memory _shopOrigin, string memory _shopName, string memory _itemId, string memory _itemName) public {
+	function writeMetaData(string memory _contractName, string memory _itemURL, string memory _shopOrigin, string memory _shopName, uint _itemId, string memory _itemName) public {
+		contractName = _contractName;
 		shopOrigin = _shopOrigin;
 		shopName = _shopName;
 		itemId = _itemId;
@@ -93,8 +95,8 @@ contract SingleItemSolyd {
 
 		return (launchTimestamp, live, itemsSold, itemPrice, maxItems, maxCashbackPercent, promoCashbackPercent, gameLevels, gameExpires, stopTimestamp, stopGameReason);
 	}
-	function gameMetaData() public view returns (string memory, string memory, string memory, string memory, string memory) {
-		return (shopOrigin, shopName, itemId, itemName, itemURL);
+	function gameMetaData() public view returns (string memory, string memory, string memory, uint, string memory, string memory) {
+		return (contractName, shopOrigin, shopName, itemId, itemName, itemURL);
 	}
 	// get paypal orderId
 	function getEscrowPaymentOrderId() public view returns (string memory) {
@@ -119,10 +121,10 @@ contract SingleItemSolyd {
 					live = false;
 					stopGameReason = 'MAXED';
 					stopTimestamp = block.timestamp;
-					itemsSold = maxItems;
 					uint itemCountAdjusted = maxItems - itemsSold;
 					uint pricePaidAdjusted = itemCountAdjusted * itemPrice;
 					purchaseId[id] = PurchaseLedger(_timeStamp, _orderNumber, _shopOrderId, itemCountAdjusted, pricePaidAdjusted);
+					itemsSold = maxItems;
 				} else {
 					itemsSold += _itemCount;
 					purchaseId[id] = PurchaseLedger(_timeStamp, _orderNumber, _shopOrderId, _itemCount, _pricePaid);
@@ -152,7 +154,7 @@ contract SingleItemSolyd {
 	}
 	// ➡️ Player Ledger Functions ➡️
 	//link wallet to player ledger return player id, new player for every new nft minted
-	function newPlayer(uint _orderNumber, address _wallet0x, uint _nft) public {
+	function newPlayer(uint _orderNumber, address _wallet0x, uint[] memory _nft) public {
 		uint purchaseLedgerId_ = orderNumber[_orderNumber];
 		bool dupe = false;
 		// Test checking for dupes
@@ -161,24 +163,26 @@ contract SingleItemSolyd {
 		}
 		if ( purchaseId[purchaseLedgerId_].orderNumber != 0 && !dupe ) {
 			uint id = players++;
-			playerId[id] = PlayerLedger(purchaseLedgerId_, _wallet0x, _nft);
+			playerId[id] = PlayerLedger(purchaseLedgerId_, _wallet0x);
+			playerNFTs[id] = _nft;
 		} 
 	}
 	// get full player ledger
-	function playerLedger() public view returns (uint[] memory, address[] memory, uint[] memory) {
+	function playerLedger() public view returns (uint[] memory, address[] memory) {
 
 		uint[] memory orderNumber_ = new uint[](players);
 		address[] memory wallet0x_ = new address[](players);
-		uint[] memory nftTokenId_ = new uint[](players);
 		
 		for (uint i = 0; i < players; i++) {
 			PlayerLedger memory entry = playerId[i];
 			orderNumber_[i] = purchaseId[entry.purchaseLedgerId].orderNumber;
 			wallet0x_[i] = entry.walletOx;
-			nftTokenId_[i] = entry.nftTokenId;
 		}
 
-		return(orderNumber_, wallet0x_, nftTokenId_);
+		return (orderNumber_, wallet0x_);
+	}
+	function getPlayerNFTs(uint _id) public view returns (uint[] memory) {
+		return playerNFTs[_id];
 	}
 	// ➡️ Payout Functions ➡️
 	//write payout return payout id

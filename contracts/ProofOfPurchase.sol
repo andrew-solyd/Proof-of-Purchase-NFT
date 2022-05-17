@@ -5,6 +5,7 @@ pragma solidity ^0.8.0;
 contract ProofOfPurchase {
 
 	// ➡️ Initialization ➡️
+	event logMintNFT(uint id_);
 	uint tokens = 0;
 	struct Token {
 		uint createdTimeStamp;
@@ -23,12 +24,15 @@ contract ProofOfPurchase {
 	mapping ( uint => address) tokenHolder;
 	// ➡️ Contract Functions ➡️
 	// mint new token return id
-	function mint (address _holderWallet, uint _createdTimeStamp, string memory _productName, uint _shopProductId, string memory _shopOrigin, string memory _productLink, uint _orderNumber, uint _shopOrderId, uint _pricePaid) public returns (uint) {
+	function mint (address _holderWallet, uint _createdTimeStamp, string memory _productName, uint _shopProductId, string memory _shopOrigin, string memory _productLink, uint _orderNumber, uint _shopOrderId, uint _pricePaid) public {
+
 		uint id = tokens++;
 		tokenId[id] = Token(_createdTimeStamp, _productName, _shopProductId, _shopOrigin, _productLink, _orderNumber, _shopOrderId, _pricePaid);
 		tokensHeld[_holderWallet].push(id);
 		tokenHolder[id] = _holderWallet;
-		return id;
+
+		emit logMintNFT(id);
+		
 	}
 	// lookup token
 	function getToken( uint _id) public view returns (uint, string memory, uint, string memory, string memory, uint, uint, uint) {

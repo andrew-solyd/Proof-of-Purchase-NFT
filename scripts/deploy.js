@@ -30,6 +30,11 @@ async function main() {
   const idToken = await IdToken.deploy();
   await idToken.deployed();
   console.log("IdToken Contract deployed to:", idToken.address);
+
+  const ProofOfPurchase = await hre.ethers.getContractFactory("ProofOfPurchase");
+  const nft = await ProofOfPurchase.deploy();
+  await nft.deployed();
+  console.log("ProofOfPurchase Contract deployed to:", nft.address);
 }
 
 main()
