@@ -15,9 +15,10 @@ contract SingleItemSolyd {
 	string contractName;
 	string shopOrigin;
 	string shopName;
-	string itemURL;
 	uint itemId;
 	string itemName;
+	string itemHandle;
+	uint checkoutVariantId;
 	string escrowPaymentOrderId;
 	uint itemPrice;
 	uint maxItems;
@@ -58,13 +59,14 @@ contract SingleItemSolyd {
 	mapping (uint => PayoutLedger) payoutId;
 	// ➡️ Contract Functions ➡️
 	// write metadata
-	function writeMetaData(string memory _contractName, string memory _itemURL, string memory _shopOrigin, string memory _shopName, uint _itemId, string memory _itemName) public {
+	function writeMetaData(string memory _contractName, string memory _itemHandle, string memory _shopOrigin, string memory _shopName, uint _itemId, string memory _itemName, uint _checkoutVariantId) public {
 		contractName = _contractName;
 		shopOrigin = _shopOrigin;
 		shopName = _shopName;
 		itemId = _itemId;
 		itemName = _itemName;
-		itemURL = _itemURL;
+		itemHandle = _itemHandle;
+		checkoutVariantId = _checkoutVariantId;
 	}
 	// write terms and lock contract
 	function writeContractTerms(uint _itemPrice, uint _maxItems, uint _maxCashbackPercent, uint _promoCashbackPercent, uint _gameLevels, uint _gameExpires, string memory _escrowPaymentOrderId) public {
@@ -95,8 +97,8 @@ contract SingleItemSolyd {
 
 		return (launchTimestamp, live, itemsSold, itemPrice, maxItems, maxCashbackPercent, promoCashbackPercent, gameLevels, gameExpires, stopTimestamp, stopGameReason);
 	}
-	function gameMetaData() public view returns (string memory, string memory, string memory, uint, string memory, string memory) {
-		return (contractName, shopOrigin, shopName, itemId, itemName, itemURL);
+	function gameMetaData() public view returns (string memory, string memory, string memory, uint, string memory, string memory, uint) {
+		return (contractName, shopOrigin, shopName, itemId, itemName, itemHandle, checkoutVariantId);
 	}
 	// get paypal orderId
 	function getEscrowPaymentOrderId() public view returns (string memory) {
@@ -155,6 +157,7 @@ contract SingleItemSolyd {
 	// ➡️ Player Ledger Functions ➡️
 	//link wallet to player ledger return player id, new player for every new nft minted
 	function newPlayer(uint _orderNumber, address _wallet0x, uint[] memory _nft) public {
+		// Test checking for dupes
 		uint purchaseLedgerId_ = orderNumber[_orderNumber];
 		bool dupe = false;
 		// Test checking for dupes
