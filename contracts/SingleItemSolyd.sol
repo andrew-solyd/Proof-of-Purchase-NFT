@@ -19,6 +19,7 @@ contract SingleItemSolyd {
 	string itemName;
 	string itemHandle;
 	uint checkoutVariantId;
+	string image;
 	string escrowPaymentOrderId;
 	uint itemPrice;
 	uint maxItems;
@@ -59,7 +60,7 @@ contract SingleItemSolyd {
 	mapping (uint => PayoutLedger) payoutId;
 	// ➡️ Contract Functions ➡️
 	// write metadata
-	function writeMetaData(string memory _contractName, string memory _itemHandle, string memory _shopOrigin, string memory _shopName, uint _itemId, string memory _itemName, uint _checkoutVariantId) public {
+	function writeMetaData(string memory _contractName, string memory _itemHandle, string memory _shopOrigin, string memory _shopName, uint _itemId, string memory _itemName, uint _checkoutVariantId, string memory _image) public {
 		contractName = _contractName;
 		shopOrigin = _shopOrigin;
 		shopName = _shopName;
@@ -67,6 +68,7 @@ contract SingleItemSolyd {
 		itemName = _itemName;
 		itemHandle = _itemHandle;
 		checkoutVariantId = _checkoutVariantId;
+		image = _image;
 	}
 	// write terms and lock contract
 	function writeContractTerms(uint _itemPrice, uint _maxItems, uint _maxCashbackPercent, uint _promoCashbackPercent, uint _gameLevels, uint _gameExpires, string memory _escrowPaymentOrderId) public {
@@ -97,8 +99,8 @@ contract SingleItemSolyd {
 
 		return (launchTimestamp, live, itemsSold, itemPrice, maxItems, maxCashbackPercent, promoCashbackPercent, gameLevels, gameExpires, stopTimestamp, stopGameReason);
 	}
-	function gameMetaData() public view returns (string memory, string memory, string memory, uint, string memory, string memory, uint) {
-		return (contractName, shopOrigin, shopName, itemId, itemName, itemHandle, checkoutVariantId);
+	function gameMetaData() public view returns (string memory, string memory, string memory, uint, string memory, string memory, uint, string memory) {
+		return (contractName, shopOrigin, shopName, itemId, itemName, itemHandle, checkoutVariantId, image);
 	}
 	// get paypal orderId
 	function getEscrowPaymentOrderId() public view returns (string memory) {

@@ -31,6 +31,8 @@ describe("ProofOfPurchase", function() {
 			const data = receipt.logs[0].data;
 			const topics = receipt.logs[0].topics;
 			const event = interface.decodeEventLog("logMintNFT", data, topics);
+			console.log(receipt.blockHash)
+			console.log(receipt.blockHash)
 			console.log(event*1)
 			let tokenCount = await hardhatNft.getTokenCount();
 	    
