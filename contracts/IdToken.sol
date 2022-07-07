@@ -5,25 +5,30 @@ pragma solidity ^0.8.0;
 contract IdToken {
 
 	// ➡️ Initialization ➡️
+	address owner;
+	constructor ()  {
+       owner = msg.sender;
+    }
 	// set up token
 	uint tokens = 0;
 	struct Token {
 		address holderWallet;
 		string holderWalletKey;
-		uint holderPhone;
+		string holderPhone;
 		string holderBtcWallet;
 		string payoutMethod;
 		bool mute;
 	}
 	mapping (uint => Token) tokenId;
 	mapping (address => uint) holderWallet;
-	mapping (uint => uint) holderPhone;
+	mapping (string => uint) holderPhone;
 	
 	// 🚧 for future Status check functionality add gameContractAddress array mapped to holderWallet + functions
 
 	// ➡️ Contract Functions ➡️
 	// mint new token
-	function mint(address _holderWallet, string memory _holderWalletKey, uint _holderPhone, string memory _holderBtcWallet, string memory _payoutMethod) public {
+	function mint(address _holderWallet, string memory _holderWalletKey, string memory _holderPhone, string memory _holderBtcWallet, string memory _payoutMethod) public {
+		require(msg.sender == owner);
 		// check phone not already mapped
 		if (holderPhone[_holderPhone] == 0) {
 			uint id = tokens++;
@@ -38,6 +43,7 @@ contract IdToken {
 
 	// setup btc wallet 
 	function setPayoutMethodBTC(address _wallet, string memory _holderBtcWallet) public {
+		require(msg.sender == owner);
 		uint id = holderWallet[_wallet];
 		Token storage token = tokenId[id];
 		token.payoutMethod = "BTC";
@@ -45,23 +51,25 @@ contract IdToken {
 	}
 	// setup payout method (VENMO / BTC)
 	function setPayoutMethodVenmo(address _wallet) public {
+		require(msg.sender == owner);
 		uint id = holderWallet[_wallet];
 		Token storage token = tokenId[id];
 		token.payoutMethod = "VENMO";
 	}
 	// setup mute/umute
 	function setMute(address _wallet, bool _mute) public {
+		require(msg.sender == owner);
 		uint id = holderWallet[_wallet];
 		Token storage token = tokenId[id];
 		token.mute = _mute;
 	}
 	// get token by holder wallet
-	function getTokenFromWallet(address _wallet) public view returns (uint, string memory, string memory, bool) {
+	function getTokenFromWallet(address _wallet) public view returns (string memory, string memory, string memory, bool) {
 		uint id = holderWallet[_wallet];
 		return (tokenId[id].holderPhone, tokenId[id].holderBtcWallet, tokenId[id].payoutMethod, tokenId[id].mute);
 	}
 	// get token by phone number
-	function getTokenFromPhone(uint _phone) public view returns (address, string memory, string memory, bool) {
+	function getTokenFromPhone(string memory _phone) public view returns (address, string memory, string memory, bool) {
 		uint id = holderPhone[_phone];
 		return (tokenId[id].holderWallet, tokenId[id].holderBtcWallet, tokenId[id].payoutMethod, tokenId[id].mute);
 	}

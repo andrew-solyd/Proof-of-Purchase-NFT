@@ -5,6 +5,10 @@ pragma solidity ^0.8.0;
 contract SingleItemSolyd {
 
 	// ➡️ Initialization ➡️
+	address owner;
+	constructor ()  {
+       owner = msg.sender;
+   	}
 	// set up contract states
 	bool private locked = false;
 	bool private live = false;
@@ -61,6 +65,7 @@ contract SingleItemSolyd {
 	// ➡️ Contract Functions ➡️
 	// write metadata
 	function writeMetaData(string memory _contractName, string memory _itemHandle, string memory _shopOrigin, string memory _shopName, uint _itemId, string memory _itemName, uint _checkoutVariantId, string memory _image) public {
+		require(msg.sender == owner);
 		contractName = _contractName;
 		shopOrigin = _shopOrigin;
 		shopName = _shopName;
@@ -72,7 +77,7 @@ contract SingleItemSolyd {
 	}
 	// write terms and lock contract
 	function writeContractTerms(uint _itemPrice, uint _maxItems, uint _maxCashbackPercent, uint _promoCashbackPercent, uint _gameLevels, uint _gameExpires, string memory _escrowPaymentOrderId) public {
-
+		require(msg.sender == owner);
 		if (locked == false) {
 			launchTimestamp = block.timestamp;
 			itemPrice = _itemPrice;
@@ -87,11 +92,12 @@ contract SingleItemSolyd {
 		}
 	}
 	// stop game
-	function stopGame(uint _stopTimestamp, string memory _stopGameReason) public {
+	function stopGame(string memory _stopGameReason) public {
+		require(msg.sender == owner);
 		if (live == true) { 
 			live = false;
 			stopGameReason = _stopGameReason;
-			stopTimestamp = _stopTimestamp;
+			stopTimestamp = block.timestamp;
 		}
 	}
 	// get game status
@@ -109,7 +115,7 @@ contract SingleItemSolyd {
 	// ➡️ Purchase Ledger Functions ➡️
 	// new purchase write to PurchaseLedger returns purchase id 
 	function writePurchase(uint _timeStamp, uint _orderNumber, uint _shopOrderId, uint _itemCount, uint _pricePaid) public {
-		
+		require(msg.sender == owner);
 		// check game is live
 		if ( live ) {
 		// check for duplicate orders
@@ -138,13 +144,11 @@ contract SingleItemSolyd {
 	}
 	// get full purchase ledger 
 	function purchaseLedger() public view returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory, uint[] memory) {
-		
 		uint[] memory timeStamp_ = new uint[](purchases);
 		uint[] memory orderNumber_ = new uint[](purchases);
 		uint[] memory shopOrderId_ = new uint[](purchases);
 		uint[] memory itemCount_ = new uint[](purchases);
 		uint[] memory pricePaid_ = new uint[](purchases);
-
 		for (uint i = 0; i < purchases; i++) {
 			PurchaseLedger memory entry = purchaseId[i];
 			timeStamp_[i] = entry.timeStamp;
@@ -153,12 +157,12 @@ contract SingleItemSolyd {
 			itemCount_[i] = entry.itemCount;
 			pricePaid_[i] = entry.pricePaid;
 		}
-
 		return(timeStamp_, orderNumber_, shopOrderId_, itemCount_, pricePaid_);
 	}
 	// ➡️ Player Ledger Functions ➡️
 	//link wallet to player ledger return player id, new player for every new nft minted
 	function newPlayer(uint _orderNumber, address _wallet0x, uint[] memory _nft) public {
+		require(msg.sender == owner);
 		// Test checking for dupes
 		uint purchaseLedgerId_ = orderNumber[_orderNumber];
 		bool dupe = false;
@@ -174,7 +178,6 @@ contract SingleItemSolyd {
 	}
 	// get full player ledger
 	function playerLedger() public view returns (uint[] memory, address[] memory) {
-
 		uint[] memory orderNumber_ = new uint[](players);
 		address[] memory wallet0x_ = new address[](players);
 		
@@ -192,6 +195,7 @@ contract SingleItemSolyd {
 	// ➡️ Payout Functions ➡️
 	//write payout return payout id
 	function writePayout(uint _timeStamp, uint _orderNumber, string memory _payoutMethod, string memory _payoutConfirmation, uint _payoutAmount) public {
+		require(msg.sender == owner);
 		uint purchaseLedgerId_ = orderNumber[_orderNumber];
 		bool dupe = false;
 		for (uint i = 0; i < payments; i++) {
@@ -204,9 +208,7 @@ contract SingleItemSolyd {
 	} //
 	// get unpaid purchase ids 
 	function notPaidoutPurchases() private view returns (uint[] memory) {
-
 		uint[] memory notPaidoutPurchaseIds = new uint[](purchases);
-
 		for (uint i = 0; i < purchases; i++) {
 			for (uint j = 0; j < payments; j++) {
 				if (payoutId[j].purchaseLedgerId != i) {
@@ -214,7 +216,6 @@ contract SingleItemSolyd {
 				} 
 			}
 		}
-
 		return (notPaidoutPurchaseIds);
 	}
 	// get full payout ledger

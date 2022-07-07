@@ -1,10 +1,11 @@
-# Solyd Ethereum Contracts Dev Environment
+# SOLYD Ethereum Contracts Dev Environment
 
 Version 3.0
 
-> “The Web as I envisaged it, we have not seen it yet. 
-> The future is still so much bigger than the past.”  
-> — Tim Berners-Lee, Inventor of the World Wide Web.
+> “If we wish to count lines of code, 
+> we should not regard them as ‘lines produced’ 
+> but as ‘lines spent.'”
+> — Edsger Dijkstra
 
 ## Operating Commands
 
@@ -18,4 +19,5 @@ npx hardhat test
 npx hardhat node
 
 npx hardhat --network localhost run scripts/deploy.js
-npx hardhat --network SKALE run scripts/deploy.js
+npx hardhat --network SKALE_TEST run scripts/deploy.js
+npx hardhat --network SKALE_V2 run scripts/deploy_test.js

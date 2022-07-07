@@ -14,9 +14,13 @@ module.exports = {
     }
   },*/
   networks: {
-      SKALE: {
-        url: process.env.ENDPOINT_HTTPS,
-        accounts: [process.env.PRIVATE_KEY]
+      SKALE_TEST: {
+        url: process.env.TEST_ENDPOINT_HTTPS,
+        accounts: [process.env.TEST_PRIVATE_KEY]
+      },
+      SKALE_V2: {
+        url: process.env.V2_ENDPOINT_HTTPS,
+        accounts: [process.env.V2_PRIVATE_KEY]
       }
     }
 };

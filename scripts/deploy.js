@@ -35,6 +35,13 @@ async function main() {
   const nft = await ProofOfPurchase.deploy();
   await nft.deployed();
   console.log("ProofOfPurchase Contract deployed to:", nft.address);
+
+  /*
+  const StressTester = await hre.ethers.getContractFactory("StressTester");
+  const stressTester = await StressTester.deploy();
+  await stressTester.deployed();
+  console.log("StressTester Contract deployed to:", stressTester.address);
+  */
 }
 
 main()

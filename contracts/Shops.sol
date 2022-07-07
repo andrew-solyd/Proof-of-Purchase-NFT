@@ -5,6 +5,10 @@ pragma solidity ^0.8.0;
 contract Shops {
 
 	// ➡️ Initialization ➡️
+	address owner;
+	constructor ()  {
+       owner = msg.sender;
+   }
 	// We use shopify shopOrigin i.e 'store.myshopify.com' is main identifier
 	uint shops = 0;
 	struct ShopLedger {
@@ -23,6 +27,7 @@ contract Shops {
 	// ➡️ Contract Functions ➡️
 	// Add shop
 	function addShop(string memory _shopOrigin, uint _createdTimeStamp) public {
+		require(msg.sender == owner);
 		uint id = shops++;
 		shopId[id] = ShopLedger(_shopOrigin, _createdTimeStamp);
 	}
@@ -39,6 +44,7 @@ contract Shops {
 	}
 	// Add credits to shop
 	function updateBalance(string memory _shopOrigin, uint256 _newBalance) public {
+		require(msg.sender == owner);
 		balance[_shopOrigin] = _newBalance;
 	}
 	// Read shop's credit balance
@@ -47,6 +53,7 @@ contract Shops {
 	}
 	// Bind contract to shop
 	function bindContract(string memory _shopOrigin, address _contractAddress) public {
+		require(msg.sender == owner);
 		contracts[_shopOrigin].push(_contractAddress);
 	}
 	// Get shop's contracts
@@ -56,18 +63,12 @@ contract Shops {
 	}
 	// Bind product item id to contract
 	function bindItem(address _contractAddress, uint _itemId) public {
+		require(msg.sender == owner);
 		item[_itemId] = _contractAddress;
 	}
 	// Check if product item is bound to contract address which it returns
 	function checkItem(uint _itemId) public view returns (address) {
 		return item[_itemId];
 	}
-
-
-	// TODO: 🚧 Payment Functions 🚧
-
-	// Set up new order and authorization
-
-
 	
 }

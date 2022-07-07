@@ -5,6 +5,10 @@ pragma solidity ^0.8.0;
 contract Claims {
 	
 	// ➡️ Initialization ➡️ 
+	address owner;
+	constructor ()  {
+    	owner = msg.sender;
+    } 
 	// set up claim
 	struct Claim {
 		address gameContractAddress;
@@ -20,6 +24,7 @@ contract Claims {
 	// ➡️ Contract Functions ➡️
 	// write claim
 	function writeClaim(uint _claimCode, address _gameContractAddress, uint _orderNumber, string memory _orderStatusUrl, string memory _shortcut) public {
+		require(msg.sender == owner);
 		if (claimCode[_claimCode].orderNumber == 0) {
 			claimCode[_claimCode].gameContractAddress = _gameContractAddress;
 			claimCode[_claimCode].orderNumber = _orderNumber;
@@ -39,6 +44,7 @@ contract Claims {
 
 	// claim claim
 	function claimClaim(uint _claimCode) public {
+		require(msg.sender == owner);
 		claimCode[_claimCode].claimed = true;
 	}
 	
